@@ -10,7 +10,7 @@ requires-python = ">=3.13"
 dependencies = [
     "adb-shell[usb]>=0.4.4",
     "av>=16.1.0",
-    "numpy>=2.4.1",
+    "numpy>=2.5.4",
     "opencv-python-headless>=4.13.0.90",
     "pillow>=12.1.0",
     "psutil>=7.2.1",
