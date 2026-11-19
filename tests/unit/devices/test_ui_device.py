@@ -55,7 +55,10 @@ def test_ui_device_where_element(mock_cv2):
             )
 
         # Mock match result at (10, 10)
-        with patch("cv2.minMaxLoc", return_value=(0, 0.99, (0, 0), (10, 10))):
+        with (
+            patch("pathlib.Path.exists", return_value=True),
+            patch("cv2.minMaxLoc", return_value=(0, 0.99, (0, 0), (10, 10))),
+        ):
             coords = device.where_element(
                 element, pymordial_screenshot=np.zeros((100, 100, 3), dtype=np.uint8)
             )
@@ -69,7 +72,7 @@ def test_ui_device_read_text(mock_pytesseract, mock_cv2):
     text = device.read_text(
         pymordial_screenshot=np.zeros((100, 100, 3), dtype=np.uint8)
     )
-    assert text == ["mocked text"]
+    assert text == ["Mocked Text"]
     assert mock_pytesseract["image_to_string"].called
 
 
@@ -81,4 +84,5 @@ def test_ui_device_find_text(mock_pytesseract, mock_cv2):
     coords = device.find_text(
         "Target", pymordial_screenshot=np.zeros((100, 100, 3), dtype=np.uint8)
     )
-    assert coords == (60, 65)
+    # DefaultExtractStrategy upscales by 2x, so (60, 65) / 2 = (30, 32)
+    assert coords == (30, 32)

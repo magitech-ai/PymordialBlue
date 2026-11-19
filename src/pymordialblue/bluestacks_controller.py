@@ -9,7 +9,6 @@ import cv2
 import numpy as np
 from PIL import Image
 from pymordial.core.blueprints.emulator_device import EmulatorState
-from pymordial.core.blueprints.extract_strategy import ExtractStrategy
 from pymordial.core.controller import PymordialController
 from pymordial.core.registry import PluginRegistry
 from pymordial.ui.element import PymordialElement
@@ -24,6 +23,7 @@ from pymordialdroid.devices.ui_device import AndroidUiDevice
 from pymordialblue.android_app import AndroidApp
 from pymordialblue.devices.bluestacks_device import BluestacksDevice
 from pymordialblue.utils.configs import get_config
+from pymordialblue.utils.extract_strategies import ExtractStrategy
 
 if TYPE_CHECKING:
     from pymordial.core.plugin import PymordialPlugin

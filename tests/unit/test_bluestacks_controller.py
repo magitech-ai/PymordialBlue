@@ -49,7 +49,7 @@ def test_controller_click_element(mock_controller):
 
 def test_controller_capture_screen(mock_controller):
     """Test capture_screen delegation."""
-    mock_controller.adb.capture_screen = MagicMock(return_value=b"fake_bytes")
+    mock_controller.adb.capture_screenshot = MagicMock(return_value=b"fake_bytes")
     assert mock_controller.capture_screen() == b"fake_bytes"
 
 
