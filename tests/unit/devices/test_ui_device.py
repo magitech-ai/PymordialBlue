@@ -42,21 +42,23 @@ def test_ui_device_where_element(mock_cv2):
     # Create a real small PIL image instead of a MagicMock to avoid __array_interface__ errors
     real_needle = Image.new("RGB", (10, 10))
 
-    with (
-        patch("PIL.Image.open") as mock_open,
-        patch("pathlib.Path.exists", return_value=True),
-    ):
+    with patch("PIL.Image.open") as mock_open:
         mock_open.return_value = real_needle
 
-        element = PymordialImage(
-            label="test_el",
-            filepath="fake.png",
-            confidence=0.9,
-            og_resolution=(100, 100),
-        )
+        # Need to satisfy PymordialImage initialization (checks path existence)
+        with patch("pathlib.Path.exists", return_value=True):
+            element = PymordialImage(
+                label="test_el",
+                filepath="fake.png",
+                confidence=0.9,
+                og_resolution=(100, 100),
+            )
 
         # Mock match result at (10, 10)
-        with patch("cv2.minMaxLoc", return_value=(0, 0.99, (0, 0), (10, 10))):
+        with (
+            patch("pathlib.Path.exists", return_value=True),
+            patch("cv2.minMaxLoc", return_value=(0, 0.99, (0, 0), (10, 10))),
+        ):
             coords = device.where_element(
                 element, pymordial_screenshot=np.zeros((100, 100, 3), dtype=np.uint8)
             )
@@ -76,14 +78,11 @@ def test_ui_device_read_text(mock_pytesseract, mock_cv2):
 
 def test_ui_device_find_text(mock_pytesseract, mock_cv2):
     """Test finding text coordinates."""
-    from pymordialdroid.utils.extract_strategies import DefaultExtractStrategy
-
     device = AndroidUiDevice()
 
-    # Center of (50, 60, 20, 10) is (60, 65) with 1x scale
+    # Center of (50, 60, 20, 10) is (60, 65)
     coords = device.find_text(
-        "Target",
-        pymordial_screenshot=np.zeros((100, 100, 3), dtype=np.uint8),
-        strategy=DefaultExtractStrategy(upscale_factor=1),
+        "Target", pymordial_screenshot=np.zeros((100, 100, 3), dtype=np.uint8)
     )
-    assert coords == (60, 65)
+    # DefaultExtractStrategy upscales by 2x, so (60, 65) / 2 = (30, 32)
+    assert coords == (30, 32)
