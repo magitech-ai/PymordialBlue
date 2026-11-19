@@ -68,10 +68,17 @@ class BluestacksController(PymordialController):
         self.registry = PluginRegistry(config=_CONFIG)
         self.registry.load_from_entry_points()
 
+        # The config holds the fallback address when the caller passes none.
+        # Without this, the default factory would build AdbDevice(None, None),
+        # which can never connect; the entry-point default used to hide that.
+        adb_host = adb_host if adb_host is not None else _CONFIG["adb"]["default_host"]
+        adb_port = adb_port if adb_port is not None else _CONFIG["adb"]["default_port"]
+
         # 1. Resolve ADB
         self.adb: AdbDevice = self._resolve_plugin(
             "adb",
             lambda: AdbDevice(host=adb_host, port=adb_port),
+            AdbDevice,
         )
         self.bridge: AdbDevice = self.adb
 
@@ -79,6 +86,7 @@ class BluestacksController(PymordialController):
         self.ocr: TesseractDevice = self._resolve_plugin(
             "ocr",
             lambda: TesseractDevice(),
+            TesseractDevice,
         )
 
         # 3. Resolve UI
@@ -91,6 +99,7 @@ class BluestacksController(PymordialController):
         self.ui: AndroidUiDevice = self._resolve_plugin(
             "ui",
             lambda: AndroidUiDevice(bridge_device=self.adb, ocr_device=self.ocr),
+            AndroidUiDevice,
             configure_found_plugin=configure_ui,
         )
 
@@ -102,6 +111,7 @@ class BluestacksController(PymordialController):
         self.bluestacks: BluestacksDevice = self._resolve_plugin(
             "bluestacks",
             lambda: BluestacksDevice(self.adb, self.ui),
+            BluestacksDevice,
             configure_found_plugin=configure_bluestacks,
         )
 
@@ -115,13 +125,25 @@ class BluestacksController(PymordialController):
         self,
         name: str,
         default_factory: Callable[[], "PymordialPlugin"],
+        default_class: type,
         configure_found_plugin: Callable[["PymordialPlugin"], None] | None = None,
     ) -> "PymordialPlugin":
         """Resolves a plugin from the registry or falls back to a default.
 
+        A registered plugin is only treated as an override when it is a
+        different class than the built-in default. The packages declare
+        their own device classes as entry points, so the registry also
+        holds default-constructed built-ins (e.g. AdbDevice at 127.0.0.1);
+        taking those at face value silently ignored the address the
+        caller passed in. A same-class entry is discarded and the
+        configured default is built instead, so the registry always holds
+        the instance the controller actually uses.
+
         Args:
             name: The name of the plugin to resolve (e.g., 'adb').
             default_factory: A function that returns a default plugin instance if not found.
+            default_class: The built-in class the factory builds. A found
+                plugin of exactly this class is not an override.
             configure_found_plugin: Optional callback to configure the found plugin (dependency injection).
 
         Returns:
@@ -129,17 +151,28 @@ class BluestacksController(PymordialController):
         """
         try:
             plugin = self.registry.get(name)
+        except KeyError:
+            plugin = None
+
+        if plugin is not None and type(plugin) is not default_class:
             logger.info("Using %s plugin: %s", name.upper(), plugin.name)
             if configure_found_plugin:
                 configure_found_plugin(plugin)
             return plugin
-        except KeyError:
+
+        if plugin is not None:
+            logger.debug(
+                "%s plugin is the built-in %s; using the configured default instead.",
+                name.upper(),
+                default_class.__name__,
+            )
+        else:
             logger.debug(
                 "%s plugin not found. Using default implementation.", name.upper()
             )
-            default_plugin = default_factory()
-            self.registry.register(default_plugin)
-            return default_plugin
+        default_plugin = default_factory()
+        self.registry.register(default_plugin)
+        return default_plugin
 
     # --- Convenience Methods (delegate to sub-controllers) ---
     # --- App Lifecycle Methods (implement base ABC) ---
