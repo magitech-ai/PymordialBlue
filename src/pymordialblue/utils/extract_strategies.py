@@ -62,7 +62,7 @@ LEVEL_WHITELIST_CONFIG = _CONFIG["extract_strategy"]["revomon"]["level"][
 ]
 
 
-class DefaultExtractStrategy(PymordialExtractStrategy):
+class ExtractStrategy(PymordialExtractStrategy):
     """Generic preprocessing suitable for any image.
 
     Features:
@@ -108,7 +108,7 @@ class DefaultExtractStrategy(PymordialExtractStrategy):
         return TESSERACT_CONFIG_DEFAULT
 
 
-class RevomonTextStrategy(DefaultExtractStrategy):
+class RevomonTextStrategy(ExtractStrategy):
     """Strategy for Revomon UI images.
 
     Attributes:
