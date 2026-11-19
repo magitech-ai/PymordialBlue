@@ -9,10 +9,8 @@ from pymordialblue.devices import (
     TesseractDevice,
 )
 from pymordialblue.utils.configs import BlueConfig, get_config
-from pymordialblue.utils.extract_strategies import (
-    DefaultExtractStrategy,
-    RevomonTextStrategy,
-)
+from pymordialblue.utils.extract_strategies import ExtractStrategy, RevomonTextStrategy
+from pymordialdroid.utils.extract_strategies import DefaultExtractStrategy
 
 __all__ = [
     "AdbDevice",
@@ -22,6 +20,7 @@ __all__ = [
     "BluestacksDevice",
     "BlueConfig",
     "DefaultExtractStrategy",
+    "ExtractStrategy",
     "RevomonTextStrategy",
     "TesseractDevice",
     "get_config",
