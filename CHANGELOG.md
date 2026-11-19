@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Fixed
+- **BlueStacks Lifecycle**: `wait_for_load()` now raises `TimeoutError` when the emulator does not become responsive in time and leaves the state in `LOADING`, instead of reporting `READY` for an emulator that never responded.
+
 ### Changed
 - **Dependency**: PymordialBlue now depends on `pymordialdroid` for shared Android device implementations.
 - **Removed**: Duplicated `PymordialAndroidApp`, `AdbDevice`, `AndroidUiDevice`, and `TesseractDevice` modules. PymordialBlue now reuses these from `pymordialdroid` directly.
