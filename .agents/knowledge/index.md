@@ -1,10 +1,12 @@
 ﻿---
-okf_version: "0.2"
+okf_version: "0.3"
+title: "PymordialBlue Knowledge Base"
+description: "BlueStacks Android emulator automation architecture, dynamic ADB port discovery, H.264 video streaming, and vendored Tesseract OCR for PymordialBlue."
 ---
 
 # PymordialBlue Knowledge Base
 
-An Open Knowledge Format (OKF v0.2) knowledge bundle documenting the PymordialBlue Android emulator automation framework, process control, video streaming, and OCR perception.
+An Open Knowledge Format (OKF v0.3) knowledge bundle documenting the PymordialBlue Android emulator automation framework, process control, video streaming, and OCR perception.
 
 ## Domains & Catalogs
 
