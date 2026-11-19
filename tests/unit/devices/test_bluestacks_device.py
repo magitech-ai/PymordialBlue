@@ -11,6 +11,7 @@ from pymordialblue.devices.bluestacks_device import BluestacksDevice
 def _make_device(mock_config, adb):
     """Build a device with fast load timings so timeout tests stay quick."""
     config = dict(mock_config["bluestacks"])
+    config["default_load_timeout"] = 1
     config["default_load_wait_time"] = 0
     config["default_ui_load_wait_time"] = 0
     return BluestacksDevice(adb_bridge_device=adb, config=config)

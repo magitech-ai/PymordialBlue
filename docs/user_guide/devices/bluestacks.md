@@ -17,7 +17,7 @@ You can override this by setting the `hd_player_exe` in your configuration or ma
 The device implements a state machine (`CLOSED` -> `LOADING` -> `READY`).
 
 *   `open(max_retries, wait_time)`: Starts the `HD-Player.exe` process. It polls `psutil` to verify the process exists.
-*   `wait_for_load()`: Blocks until the device is responsive via ADB. This is automatically called during the transition from `LOADING` to `READY`.
+*   `wait_for_load()`: Blocks until the device is responsive via ADB. It runs when the device enters `LOADING` and raises `TimeoutError` if the emulator does not respond in time, leaving the state in `LOADING` so the caller can retry or close the device.
 *   `close()`: Terminates the `HD-Player.exe` process and disconnects ADB.
 
 ## Window Management
