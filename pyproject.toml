@@ -12,7 +12,7 @@ dependencies = [
     "av>=19.0.2",
     "numpy>=2.5.4",
     "opencv-python-headless>=4.13.0.90",
-    "pillow>=12.1.0",
+    "pillow>=13.0.0",
     "psutil>=7.2.1",
     "pymordial>=0.4.1",
     "pymordialdroid @ git+https://github.com/IAmNo1Special/PymordialDroid.git",
